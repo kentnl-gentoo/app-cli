@@ -1,4 +1,4 @@
-#line 1 "inc/Module/Install/Makefile.pm - /usr/local/lib/perl5/site_perl/5.8.5/Module/Install/Makefile.pm"
+#line 1 "inc/Module/Install/Makefile.pm - /Library/Perl/5.8.6/Module/Install/Makefile.pm"
 package Module::Install::Makefile;
 use Module::Install::Base; @ISA = qw(Module::Install::Base);
 
@@ -21,6 +21,14 @@ sub makemaker_args {
     my $args = ($self->{makemaker_args} ||= {});
     %$args = ( %$args, @_ ) if @_;
     $args;
+}
+
+sub build_subdirs {
+    my $self = shift;
+    my $subdirs = $self->makemaker_args->{DIR} ||= [];
+    for my $subdir (@_) {
+        push @$subdirs, $subdir;
+    }
 }
 
 sub clean_files {
@@ -53,6 +61,11 @@ sub write {
     $args->{NAME} = $self->module_name || $self->name || $self->determine_NAME($args);
     $args->{VERSION} = $self->version || $self->determine_VERSION($args);
     $args->{NAME} =~ s/-/::/g;
+
+    # Only call $self->tests if we haven't been given explicit
+    # tests from makemaker_args.
+    $args->{test} ||= {TESTS => $self->tests};
+
 
     if ($] >= 5.005) {
 	$args->{ABSTRACT} = $self->abstract;
@@ -140,4 +153,4 @@ sub postamble {
 
 __END__
 
-#line 273
+#line 286
