@@ -1,8 +1,8 @@
-#line 1 "/private/tmp/App-CLI/inc/Module/Install.pm - /Library/Perl/5.8.6/Module/Install.pm"
+#line 1 "/home/clkao/work/modules/App-CLI/inc/Module/Install.pm - /usr/local/lib/perl5/site_perl/5.8.5/Module/Install.pm"
 package Module::Install;
 use 5.004;
 
-$VERSION = '0.41';
+$VERSION = '0.50'; # Don't forget to update Module::Install::Admin too!
 
 die << "." unless $INC{join('/', inc => split(/::/, __PACKAGE__)).'.pm'};
 Please invoke ${\__PACKAGE__} with:

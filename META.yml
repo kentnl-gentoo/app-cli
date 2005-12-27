@@ -1,13 +1,14 @@
-name: App-CLI
-version: 0.02
 abstract: Dispatcher module for command line interface programs
 author: Chia-liang Kao <clkao@clkao.org>
-license: perl
 distribution_type: module
-requires:
-  Locale::Maketext::Simple: 0
-  Getopt::Long: 2.34
+generated_by: Module::Install version 0.50
+license: perl
+name: App-CLI
 no_index:
   directory:
     - inc
-generated_by: Module::Install version 0.41
+    - t
+requires:
+  Getopt::Long: 2.34
+  Locale::Maketext::Simple: 0
+version: 0.03
