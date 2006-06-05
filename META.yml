@@ -1,7 +1,7 @@
 abstract: Dispatcher module for command line interface programs
 author: Chia-liang Kao <clkao@clkao.org>
 distribution_type: module
-generated_by: Module::Install version 0.59
+generated_by: Module::Install version 0.61
 license: perl
 name: App-CLI
 no_index: 
@@ -12,4 +12,4 @@ requires:
   Getopt::Long: 2.35
   Locale::Maketext::Simple: 0
   Pod::Simple::Text: 0
-version: 0.04
+version: 0.05
