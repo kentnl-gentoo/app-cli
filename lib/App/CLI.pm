@@ -1,5 +1,5 @@
 package App::CLI;
-our $VERSION = '0.103';
+our $VERSION = '0.2';
 use strict;
 use warnings;
 
@@ -10,36 +10,72 @@ App::CLI - Dispatcher module for command line interface programs
 =head1 SYNOPSIS
 
     package MyApp;
-    use base 'App::CLI';
+    use base 'App::CLI';        # the DISPATCHER of your App
+                                # it's not necessary putting the dispather on the top level of your App
 
     package main;
 
-    MyApp->dispatch;
+    MyApp->dispatch;            # call dispather in where you want
 
     package MyApp::List;
+    use base qw(App::CLI::Command); # any (SUB)COMMAND of your App
+
+    use constant options => qw( 
+        "h|help"   => "help",
+        "verbose"  => "verbose",
+        'n|name=s'  => 'name',
+    );
+
+    use constant subcommands => qw(User Nickname); # if you want subcommands
+
+    sub run {
+        my ($self, @args) = @_;
+
+        print "verbose" if $self->{verbose};
+        my $name = $self->{name}; # get arg following long option --name
+
+        if ($self->{help}) {
+            # if $ myapp list --help or $ $ myapp list -h
+            # just only output PODs
+        } else {
+            if ($self->cascadable) {
+                $self->cascading->run_command; # if you want to invoke MyApp::List::User or MyApp::List::Nickname
+            } else {
+                # do something that without subcommand
+                # or die as below
+                $self->error_cmd;
+            }
+        }
+    }
+
+    package MyApp::List::User;
     use base qw(App::CLI::Command);
 
     sub run {
-        my ($self, @args ) = @_;
-
-
+        my ($self,@args) = @_;
+        # code for listing user
     }
 
-    package MyApp::Help;
-    use base 'App::CLI::Command';
-
-    sub options { (
-        'verbose' => 'verbose',
-        'n|name=s'  => 'name'
-    }
+    pakcage MyApp::List::Nickname;
+    use base qw(App::CLI::Command);
 
     sub run {
-        my ( $self, $arg ) = @_;
+        my ($self,@args) = @_;
+        # code for listing nickname
+    }
 
-        print "verbose" if $self->{verbose};
 
-        my $name = $self->{name};
+    package MyApp::Help;
+    use base 'App::CLI::Command::Help';
 
+    use constant options => (
+        'verbose' => 'verbose',
+    );
+
+    sub run {
+        my ($self, @arg) = @_;
+        # do something
+        $self->SUPER(@_); # App::CLI::Command::Help would output PDOs of each command
     }
 
 =head1 DESCRIPTION
@@ -58,21 +94,30 @@ use constant options => ();
 
 sub new {
     my $class = shift;
-    my $self = bless {}, $class;
-    %$self = @_;
-    return $self;
+    bless {@_}, $class;
 }
 
 sub prepare {
     my $class = shift;
     my $data = {};
-    $class->_getopt( [qw(no_ignore_case bundling pass_through)],
-		     _opt_map($data, $class->global_options));
+
+    $class->_getopt(
+        [qw(no_ignore_case bundling pass_through)],
+        _opt_map($data, $class->global_options)
+    );
+
     my $cmd = shift @ARGV;
     $cmd = $class->get_cmd($cmd, @_, %$data);
 
-    $class->_getopt( [qw(no_ignore_case bundling)],
-		     _opt_map($cmd, $cmd->command_options) );
+    while ($cmd->cascadable) {
+      $cmd = $cmd->cascading;
+    }
+
+    $class->_getopt(
+        [qw(no_ignore_case bundling)],
+	_opt_map($cmd, $cmd->command_options)
+    );
+
     return $cmd;
 }
 
@@ -158,11 +203,13 @@ More documentation
 =head1 SEE ALSO
 
 L<App::CLI::Command>
+L<Getopt::Long>
 
 =head1 AUTHORS
 
 Chia-liang Kao E<lt>clkao@clkao.orgE<gt>
 Cornelius Lin  E<lt>cornelius.howl@gmail.comE<gt>
+shelling       E<lt>navyblueshellingford@gmail.comE<gt>
 
 =head1 COPYRIGHT
 

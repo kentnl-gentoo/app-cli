@@ -10,30 +10,25 @@ App::CLI::Command - Base class for App::CLI commands
 
 =head1 SYNOPSIS
 
-    package MyApp;
-    use base 'App::CLI';
+    package MyApp::List;
+    use base qw(App::CLI::Command);
 
-    package main;
-
-    MyApp->dispatch;
-
-
-    package MyApp::Help;
-    use base 'App::CLI::Command';
-
-    sub options { (
-        'verbose' => 'verbose',
-        'n|name=s'  => 'name'
-    }
+    use constant options => (
+        'verbose'   => 'verbose',
+        'n|name=s'  => 'name',
+    );
 
     sub run {
         my ( $self, $arg ) = @_;
 
         print "verbose" if $self->{verbose};
 
-        my $name = $self->{name};
+        my $name = $self->{name}; # get arg following long option --name
 
+        # any thing your want this command do
     }
+
+    # See App::CLI for information of how to invoke (sub)command.
 
 =head1 DESCRIPTION
 
@@ -45,14 +40,11 @@ use constant options => ();
 
 sub new {
     my $class = shift;
-    my $self = bless {}, $class;
-    %$self = @_;
-    return $self;
+    bless {@_}, $class;
 }
 
 sub command_options {
-    ( (map { $_ => $_ } $_[0]->subcommands),
-      $_[0]->options );
+    ( (map { $_ => $_ } $_[0]->subcommands), $_[0]->options );
 }
 
 # XXX:
@@ -71,12 +63,47 @@ sub subcommand {
     my @cmd = $self->subcommands;
     @cmd = values %{{$self->options}} if @cmd && $cmd[0] eq '*';
     for (grep {$self->{$_}} @cmd) {
-	no strict 'refs';
-	if (exists ${ref($self).'::'}{$_.'::'}) {
+      no strict 'refs';
+      if (exists ${ref($self).'::'}{$_.'::'}) {
 	    bless ($self, (ref($self)."::$_"));
-	    last;
-	}
+        last;
+      }
     }
+}
+
+=head3 cascading()
+
+return instance of subcommand invoked if it was listed in your constant subcommands.
+
+=cut
+
+sub cascading {
+  my $self = shift;
+  if ($self->cascadable) {
+    my $subcmd = shift @ARGV;
+    my %data = %{$self};
+    return bless {%data}, ref($self)."::".ucfirst($subcmd);
+  }
+  return undef;
+}
+
+=head3 cascadable()
+
+return 1 if the subcommand invoked is in you constant subcommands
+
+otherwise, return undef
+
+=cut
+
+sub cascadable {
+  my $self = shift;
+  for ($self->subcommands) {
+    no strict 'refs';
+    if (ucfirst($ARGV[0]) eq $_ && exists ${ref($self)."::"}{$_."::"}) {
+      return 1;
+    }
+  }
+  return undef
 }
 
 sub app {
@@ -187,10 +214,13 @@ More documentation
 =head1 SEE ALSO
 
 L<App::CLI>
+L<Getopt::Long>
 
 =head1 AUTHORS
 
 Chia-liang Kao E<lt>clkao@clkao.orgE<gt>
+Cornelius Lin  E<lt>cornelius.howl@gmail.comE<gt>
+shelling       E<lt>navyblueshellingford@gmail.comE<gt>
 
 =head1 COPYRIGHT
 
