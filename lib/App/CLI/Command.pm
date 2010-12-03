@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use Locale::Maketext::Simple;
 use Carp ();
+use App::CLI::Helper;
 
 =head1 NAME
 
@@ -43,8 +44,10 @@ sub new {
     bless {@_}, $class;
 }
 
+
+
 sub command_options {
-    ( (map { $_ => $_ } $_[0]->subcommands), $_[0]->options );
+    ((map { $_ => $_ } $_[0]->subcommands), $_[0]->options);
 }
 
 # XXX:
@@ -58,38 +61,48 @@ sub run_command {
     $self->run(@_);
 }
 
+=head3 subcommand()
+
+    return old genre subcommand of $self;
+
+=cut
+
 sub subcommand {
     my $self = shift;
     my @cmd = $self->subcommands;
     @cmd = values %{{$self->options}} if @cmd && $cmd[0] eq '*';
+    my $subcmd = undef;
     for (grep {$self->{$_}} @cmd) {
       no strict 'refs';
       if (exists ${ref($self).'::'}{$_.'::'}) {
-	    bless ($self, (ref($self)."::$_"));
+        my %data = %{$self};
+	$subcmd = bless ({%data}, (ref($self)."::$_"));
         last;
       }
     }
+    $subcmd ? $subcmd : $self;
 }
 
 =head3 cascading()
 
-return instance of subcommand invoked if it was listed in your constant subcommands.
+return instance of cascading subcommand invoked if it was listed in your constant subcommands.
 
 =cut
 
 sub cascading {
   my $self = shift;
-  if ($self->cascadable) {
-    my $subcmd = shift @ARGV;
+  if (my $subcmd = $self->cascadable) {
+    shift @ARGV;
     my %data = %{$self};
-    return bless {%data}, ref($self)."::".ucfirst($subcmd);
+    return bless {%data}, $subcmd;
+  } else {
+    die $self->error_cmd;
   }
-  return undef;
 }
 
 =head3 cascadable()
 
-return 1 if the subcommand invoked is in you constant subcommands
+return package name of subcommand if the subcommand invoked is in you constant subcommands
 
 otherwise, return undef
 
@@ -99,8 +112,9 @@ sub cascadable {
   my $self = shift;
   for ($self->subcommands) {
     no strict 'refs';
+    eval "require ".ref($self)."::$_";
     if (ucfirst($ARGV[0]) eq $_ && exists ${ref($self)."::"}{$_."::"}) {
-      return 1;
+      return ref($self)."::".$_;
     }
   }
   return undef
@@ -207,9 +221,6 @@ sub filename {
     return $INC{"$fname.pm"};
 }
 
-=head1 TODO
-
-More documentation
 
 =head1 SEE ALSO
 
