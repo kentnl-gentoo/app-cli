@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-use inc::Module::Install;
+use lib q[.]; use inc::Module::Install;
 
 name		('App-CLI');
 author		('Chia-liang Kao <clkao@clkao.org>');
