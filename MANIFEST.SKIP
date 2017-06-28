@@ -4,7 +4,12 @@
 ^Makefile$
 ^\.git
 MYMETA.yml
+MYMETA.json
 .tar.gz$
 test*
 shipit
-META.yml
+.*\.bak$
+.*~$
+.*\.swp$
+\.travis\.yml
+^cover_db

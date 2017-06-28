@@ -1,21 +1,51 @@
 #!/usr/bin/perl
 
-use inc::Module::Install;
+use strict;
+use warnings;
 
-name		('App-CLI');
-author		('Chia-liang Kao <clkao@clkao.org>');
-# author		('Cornelius <cornelius.howl@gmail.com>');
-abstract_from	('lib/App/CLI.pm');
-license		('perl');
-version_from	('lib/App/CLI.pm');
+use ExtUtils::MakeMaker qw(6.64);
 
-requires(
-    'Locale::Maketext::Simple' => 0,
-    'Getopt::Long'             => '2.35',
-    'Pod::Simple::Text'        => 0,
+WriteMakefile(
+    NAME          => "App::CLI",
+    VERSION_FROM  => "lib/App/CLI.pm",
+    ABSTRACT_FROM => "lib/App/CLI.pm",
+    AUTHOR        => ('Chia-liang Kao <clkao@clkao.org>'),
+    LICENSE       => "perl_5",
+    PREREQ_PM     => {
+        'Locale::Maketext::Simple' => 0,
+        'Getopt::Long'             => '2.35',
+        'Pod::Simple::Text'        => 0,
+        'Carp'                     => 0,
+        'File::Find'               => 0,
+    },
+    MIN_PERL_VERSION => 5.006,
+    TEST_REQUIRES    => {
+        'Test::More' => 0,
+    },
+    META_MERGE => {
+        "meta-spec" => { version => 2 },
+        resources   => {
+            repository => {
+                type => 'git',
+                url  => 'git@github.com:paultcochrane/app-cli.git',
+                web  => 'https://github.com/paultcochrane/app-cli',
+            },
+        },
+        provides => {
+            'App::CLI' => {
+                file => 'lib/App/CLI.pm',
+            },
+            'App::CLI::Helper' => {
+                file => 'lib/App/CLI/Helper.pm',
+            },
+            'App::CLI::Command' => {
+                file => 'lib/App/CLI/Command.pm',
+            },
+            'App::CLI::Command::Help' => {
+                file => 'lib/App/CLI/Command/Help.pm',
+            },
+        }
+    },
 );
 
-auto_install();
-
-# WriteAll( sign => 1 );
-WriteAll( );
+# vim: expandtab shiftwidth=4

@@ -1,3 +1,27 @@
+0.32 Wed 28 Jun 2017 20:30:19 CEST
+
+  * Fix RT#122101: unskip META.yml
+  * Fix RT#120982: can't find inc/Module/Install.pm; replaced
+    Module::Install with ExtUtils::MakeMaker
+  * Fix RT#63798: fix typo in manpage
+  * Fix RT#62241: signature broken (signature has been removed)
+  * Fixed more typos in POD
+  * Fixed some PerlCritic issues
+  * Updated dependencies, specified repository and provides metadata,
+    specified minimum Perl version
+
+0.313 Sat 4 Dec 2010 12:55:18 GMT
+
+  * add more tests
+
+0.312 Fri 3 Dec 2010 12:06:53 GMT
+
+  * add commands() and files() routines
+
+0.311 Fri 3 Dec 2010 05:30:16 GMT
+
+  * add more docs
+  * fix subcommand() to support old genre
 
 0.31 Thu 25 Nov 2010 03:58:47 PM CST
 
