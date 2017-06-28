@@ -56,6 +56,6 @@
          "web" : "https://github.com/paultcochrane/app-cli"
       }
    },
-   "version" : "v0.4.5",
+   "version" : "0.45",
    "x_serialization_backend" : "JSON::PP version 2.27400"
 }
