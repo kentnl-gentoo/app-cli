@@ -2,6 +2,9 @@
 abstract: 'Dispatcher module for command line interface programs'
 author:
   - 'Chia-liang Kao <clkao@clkao.org>'
+  - 'Yo-An Lin      <cornelius.howl@gmail.com>'
+  - 'Shelling       <navyblueshellingford@gmail.com>'
+  - 'Paul Cochrane  <paul@liekut.de>'
 build_requires:
   ExtUtils::MakeMaker: '0'
   Test::More: '0'
@@ -21,6 +24,7 @@ no_index:
 provides:
   App::CLI:
     file: lib/App/CLI.pm
+    version: v0.4.3
   App::CLI::Command:
     file: lib/App/CLI/Command.pm
   App::CLI::Command::Help:
@@ -36,5 +40,5 @@ requires:
   perl: '5.006'
 resources:
   repository: https://github.com/paultcochrane/app-cli
-version: v0.4.2
+version: v0.4.3
 x_serialization_backend: 'CPAN::Meta::YAML version 0.012'

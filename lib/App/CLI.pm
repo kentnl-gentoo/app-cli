@@ -4,8 +4,6 @@ use strict;
 use warnings;
 use 5.006;
 
-our $VERSION = '0.4.2';
-
 =head1 NAME
 
 App::CLI - Dispatcher module for command line interface programs
@@ -247,6 +245,8 @@ Chia-liang Kao E<lt>clkao@clkao.orgE<gt>
 Yo-An Lin      E<lt>cornelius.howl@gmail.comE<gt>
 
 Shelling       E<lt>navyblueshellingford@gmail.comE<gt>
+
+Paul Cochrane  E<lt>paul@liekut.deE<gt> (current maintainer)
 
 =head1 COPYRIGHT
 

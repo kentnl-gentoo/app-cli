@@ -5,8 +5,6 @@ use Locale::Maketext::Simple;
 use Carp ();
 use App::CLI::Helper;
 
-our $VERSION = '0.4.2';
-
 =head1 NAME
 
 App::CLI::Command - Base class for App::CLI commands
@@ -226,14 +224,17 @@ sub filename {
 
 =head1 SEE ALSO
 
-L<App::CLI>
-L<Getopt::Long>
+L<App::CLI>, L<Getopt::Long>
 
 =head1 AUTHORS
 
 Chia-liang Kao E<lt>clkao@clkao.orgE<gt>
+
 Cornelius Lin  E<lt>cornelius.howl@gmail.comE<gt>
-shelling       E<lt>navyblueshellingford@gmail.comE<gt>
+
+Shelling       E<lt>navyblueshellingford@gmail.comE<gt>
+
+Paul Cochrane  E<lt>paul@liekut.deE<gt> (current maintainer)
 
 =head1 COPYRIGHT
 
