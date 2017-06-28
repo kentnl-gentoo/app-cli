@@ -49,21 +49,6 @@
          }
       }
    },
-   "provides" : {
-      "App::CLI" : {
-         "file" : "lib/App/CLI.pm",
-         "version" : "v0.4.3"
-      },
-      "App::CLI::Command" : {
-         "file" : "lib/App/CLI/Command.pm"
-      },
-      "App::CLI::Command::Help" : {
-         "file" : "lib/App/CLI/Command/Help.pm"
-      },
-      "App::CLI::Helper" : {
-         "file" : "lib/App/CLI/Helper.pm"
-      }
-   },
    "release_status" : "stable",
    "resources" : {
       "repository" : {
@@ -71,6 +56,6 @@
          "web" : "https://github.com/paultcochrane/app-cli"
       }
    },
-   "version" : "v0.4.3",
+   "version" : "v0.4.4",
    "x_serialization_backend" : "JSON::PP version 2.27400"
 }

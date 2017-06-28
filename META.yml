@@ -21,16 +21,6 @@ no_index:
   directory:
     - t
     - inc
-provides:
-  App::CLI:
-    file: lib/App/CLI.pm
-    version: v0.4.3
-  App::CLI::Command:
-    file: lib/App/CLI/Command.pm
-  App::CLI::Command::Help:
-    file: lib/App/CLI/Command/Help.pm
-  App::CLI::Helper:
-    file: lib/App/CLI/Helper.pm
 requires:
   Carp: '0'
   File::Find: '0'
@@ -40,5 +30,5 @@ requires:
   perl: '5.006'
 resources:
   repository: https://github.com/paultcochrane/app-cli
-version: v0.4.3
+version: v0.4.4
 x_serialization_backend: 'CPAN::Meta::YAML version 0.012'

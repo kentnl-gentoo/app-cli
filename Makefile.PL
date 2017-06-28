@@ -7,7 +7,7 @@ use ExtUtils::MakeMaker qw(6.64);
 
 WriteMakefile(
     NAME          => "App::CLI",
-    VERSION       => '0.4.3',
+    VERSION       => '0.4.4',
     ABSTRACT_FROM => "lib/App/CLI.pm",
     AUTHOR        => [
         'Chia-liang Kao <clkao@clkao.org>',
@@ -34,21 +34,6 @@ WriteMakefile(
                 type => 'git',
                 url  => 'git@github.com:paultcochrane/app-cli.git',
                 web  => 'https://github.com/paultcochrane/app-cli',
-            },
-        },
-        provides => {
-            'App::CLI' => {
-                file    => 'lib/App/CLI.pm',
-                version => '0.4.3',
-            },
-            'App::CLI::Helper' => {
-                file => 'lib/App/CLI/Helper.pm',
-            },
-            'App::CLI::Command' => {
-                file => 'lib/App/CLI/Command.pm',
-            },
-            'App::CLI::Command::Help' => {
-                file => 'lib/App/CLI/Command/Help.pm',
             },
         },
     },
