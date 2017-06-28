@@ -36,5 +36,5 @@ requires:
   perl: '5.006'
 resources:
   repository: https://github.com/paultcochrane/app-cli
-version: '0.4'
+version: v0.4.1
 x_serialization_backend: 'CPAN::Meta::YAML version 0.012'
