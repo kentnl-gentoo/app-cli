@@ -1,6 +1,7 @@
 package MyApp::Test::Cascading::Infinite::Subcommands;
 use base qw(App::CLI::Command);
 use strict;
+use warnings;
 use CLITest;
 
 use constant options => (
@@ -9,9 +10,8 @@ use constant options => (
 );
 
 sub run {
-  my $self = shift;
-  cliack($self->{name}, $self->{help} ? "help" : "");
+    my $self = shift;
+    cliack( $self->{name}, $self->{help} ? "help" : "" );
 }
-
 
 1;

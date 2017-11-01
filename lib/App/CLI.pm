@@ -3,8 +3,9 @@ package App::CLI;
 use strict;
 use warnings;
 use 5.006;
+use Class::Load qw( load_class );
 
-our $VERSION = '0.45';
+our $VERSION = '0.46';
 
 =head1 NAME
 
@@ -14,12 +15,12 @@ App::CLI - Dispatcher module for command line interface programs
 
     package MyApp;
     use base 'App::CLI';        # the DISPATCHER of your App
-                                # it's not necessary putting the dispatcher
+                                # it's not necessary to put the dispatcher
                                 # on the top level of your App
 
     package main;
 
-    MyApp->dispatch;            # call dispatcher in where you want
+    MyApp->dispatch;            # call the dispatcher where you want
 
 
     package MyApp::List;
@@ -45,9 +46,9 @@ App::CLI - Dispatcher module for command line interface programs
 
         if ($self->{help}) {
             # if $ myapp list --help or $ myapp list -h
-            # just only output PODs
+            # only output PODs
         } else {
-            # do something when imvoking $ my app list
+            # do something when invoking $ myapp list
             # without subcommand and --help
         }
     }
@@ -75,6 +76,7 @@ App::CLI - Dispatcher module for command line interface programs
         my ($self,@args) = @_;
         # code for listing nickname
     }
+
 
     package MyApp::List::type;   # old genre of subcommand could not cascade infinitely
     use base qw(MyApp::List);    # should inherit its parent's command
@@ -104,41 +106,53 @@ C<App::CLI> dispatches CLI (command line interface) based commands
 into command classes.  It also supports subcommand and per-command
 options.
 
-=cut
+=head2 Methods
 
+=cut
 
 use App::CLI::Helper;
 use Getopt::Long ();
 
-use constant alias => ();
+use constant alias          => ();
 use constant global_options => ();
-use constant options => ();
+use constant options        => ();
 
 sub new {
-    my $class = shift;
-    bless {@_}, $class;
+    my ( $class, @args ) = @_;
+    my $self = bless {@args}, $class;
+    $self->{'app_argv'} = undef;
+
+    return $self;
+}
+
+sub app_argv {
+    my $self = shift;
+
+    if (@_) {
+        $self->{'app_argv'} = shift;
+    }
+
+    return $self->{'app_argv'};
 }
 
 sub prepare {
-    my $class = shift;
+    my $self = shift;
     my $data = {};
 
-    $class->get_opt(
+    $self->get_opt(
         [qw(no_ignore_case bundling pass_through)],
-        opt_map($data, $class->global_options)
+        opt_map( $data, $self->global_options )
     );
 
-    my $cmd = $class->get_cmd(shift @ARGV, @_, %$data);
+    my $command_name = shift @ARGV;
+    my $cmd = $self->get_cmd( $command_name, @_, $data );
 
-    while ($cmd->cascadable) {
-      $cmd = $cmd->cascading;
+    while ( $cmd->cascadable ) {
+        $cmd = $cmd->cascading;
     }
 
-
-    $class->get_opt(
-        [qw(no_ignore_case bundling)],
-        opt_map($cmd, $cmd->command_options)
-    );
+    $self->get_opt( [qw(no_ignore_case bundling)],
+        opt_map( $cmd, $cmd->command_options ) );
 
     $cmd = $cmd->subcommand;
 
@@ -152,55 +166,95 @@ Give options map, processed by L<Getopt::Long::Parser>.
 =cut
 
 sub get_opt {
-    my $class = shift;
-    my $config = shift;
+    my ( $self, $config, @app_options ) = @_;
     my $p = Getopt::Long::Parser->new;
     $p->configure(@$config);
     my $err = '';
     local $SIG{__WARN__} = sub {
-      my $msg = shift;
-      $err .= "$msg"
+        my $msg = shift;
+        $err .= "$msg";
     };
-    die $class->error_opt ($err) unless $p->getoptions(@_);
+    my @current_argv = @ARGV;
+    $self->app_argv( \@current_argv );
+    die $self->error_opt($err) unless $p->getoptions(@app_options);
 }
-
 
 sub opt_map {
-    my ($self, %opt) = @_;
-    return map { $_ => ref($opt{$_}) ? $opt{$_} : \$self->{$opt{$_}}} keys %opt;
+    my ( $self, %opt ) = @_;
+    return
+      map { $_ => ref( $opt{$_} ) ? $opt{$_} : \$self->{ $opt{$_} } } keys %opt;
 }
 
-
-=head3
+=head3 dispatch(@args)
 
 Interface of dispatcher
 
 =cut
 
 sub dispatch {
-    my $class = shift;
-    $class->prepare(@_)->run_command(@ARGV);
-}
+    my ( $self, @args ) = @_;
+    $self = $self->new unless ref $self;
 
+    $self->app($self) if $self->can('app');
+
+    my $cmd = $self->prepare(@args);
+    $cmd->run_command(@ARGV);
+}
 
 =head3 cmd_map($cmd)
 
-Find package name of subcommand in constant C<%alias>.
+Find the name of the package implementing the requested command.
 
-If it's found, return C<ucfirst> of the package name, otherwise, return
-C<ucfirst> of C<$cmd> itself.
+The command is first searched for in C<alias>. If the alias exists and points
+to a package name starting with the C<+> sign, then that package name (minus
+the C<+> sign) is returned. This makes it possible to map commands to arbitrary
+packages.
+
+Otherwise, the package is searched for in the result of calling C<commands>,
+and a package name is constructed by upper-casing the first character of the
+command name, and appending it to the package name of the app itself.
+
+If both of these fail, and the command does not map to any package name,
+C<undef> is returned instead.
 
 =cut
 
 sub cmd_map {
-    my ($pkg, $cmd) = @_;
-    my %alias = $pkg->alias;
-    $cmd = $alias{$cmd} if exists $alias{$cmd};
-    return ucfirst($cmd);
+    my ( $self, $cmd ) = @_;
+
+    my %alias = $self->alias;
+
+    if ( exists $alias{$cmd} ) {
+        $cmd = $alias{$cmd};
+
+        # Alias points to package name, return immediately
+        return $cmd if $cmd =~ s/^\+//;
+    }
+
+    ($cmd) = grep { $_ eq $cmd } $self->commands;
+
+    # No such command
+    return unless $cmd;
+
+    my $base = ref $self->app;
+    return join '::', $base, ucfirst $cmd;
 }
 
 sub error_cmd {
-    "Command not recognized, try $0 --help.\n";
+    my ( $self, $pkg ) = @_;
+
+    my $cmd;
+    if ( defined($pkg) ) {
+        $cmd = ref($pkg) || $pkg;
+    }
+    elsif ( ${ $self->app_argv }[0] ) {
+        $cmd = ${ $self->app_argv }[0];
+    }
+    else {
+        $cmd = '<empty command>';
+    }
+
+    return "Command '$cmd' not recognized, try $0 --help.\n";
 }
 
 sub error_opt { $_[1] }
@@ -212,47 +266,82 @@ Return subcommand of first level via C<$ARGV[0]>.
 =cut
 
 sub get_cmd {
-    my ($class, $cmd, @arg) = @_;
-    die $class->error_cmd unless $cmd && $cmd =~ m/^[?a-z]+$/;
+    my ( $self, $cmd, $data ) = @_;
+    die $self->error_cmd($cmd) unless $cmd && $cmd eq lc($cmd);
 
-    my $pkg = join('::', $class, $class->cmd_map($cmd));
-    my $file = "$pkg.pm";
-    $file =~ s!::!/!g;
-    eval { require $file; };
+    my $base = ref $self;
+    my $pkg  = $self->cmd_map($cmd);
 
-    unless ($pkg->can('run')) {
-      warn $@ if $@ and exists $INC{$file};
-      die $class->error_cmd;
-    } else {
-      $cmd = $pkg->new(@arg);
-      $cmd->app($class);
-      return $cmd;
-    }
+    die $self->error_cmd($cmd) unless $pkg;
+
+    load_class $pkg;
+
+    die $self->error_cmd($cmd) unless $pkg->can('run');
+
+    my @arg = defined $data ? %$data : ();
+    $cmd = $pkg->new(@arg);
+    $cmd->app($self);
+    return $cmd;
 }
-
 
 =head1 SEE ALSO
 
+=over 4
+
+=item *
+
 L<App::CLI::Command>
+
+=item *
+
 L<Getopt::Long>
 
-=head1 MODULES USE App::CLI
-
-L<Jifty::Script>, L<App::gh>, L<App::I18N>
+=back
 
 =head1 AUTHORS
 
+=over 4
+
+=item *
+
 Chia-liang Kao E<lt>clkao@clkao.orgE<gt>
+
+=item *
+
+Alex Vandiver  E<lt>alexmv@bestpractical.comE<gt>
+
+=item *
 
 Yo-An Lin      E<lt>cornelius.howl@gmail.comE<gt>
 
+=item *
+
 Shelling       E<lt>navyblueshellingford@gmail.comE<gt>
+
+=item *
 
 Paul Cochrane  E<lt>paul@liekut.deE<gt> (current maintainer)
 
+=back
+
+=head1 CONTRIBUTORS
+
+The following people have contributed patches to the project:
+
+=over 4
+
+=item *
+
+José Joaquín Atria E<lt>jjatria@gmail.comE<gt>
+
+=back
+
 =head1 COPYRIGHT
 
-Copyright 2005-2006 by Chia-liang Kao E<lt>clkao@clkao.orgE<gt>.
+Copyright 2005-2010 by Chia-liang Kao E<lt>clkao@clkao.orgE<gt>.
+Copyright 2010 by Yo-An Lin E<lt>cornelius.howl@gmail.comE<gt>
+and Shelling E<lt>navyblueshellingford@gmail.comE<gt>.
+Copyright 2017 by Paul Cochrane E<lt>paul@liekut.deE<gt>
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

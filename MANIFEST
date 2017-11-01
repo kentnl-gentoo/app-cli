@@ -1,13 +1,17 @@
 Changes
 lib/App/CLI.pm
 lib/App/CLI/Command.pm
+lib/App/CLI/Command/Commands.pm
 lib/App/CLI/Command/Help.pm
+lib/App/CLI/Command/Version.pm
 lib/App/CLI/Helper.pm
 Makefile.PL
 MANIFEST			This list of files
 MANIFEST.SKIP
 README.md
-t/1basic.t
+t/01-basic.t
+t/02-command.t
+t/99-kwalitee.t
 t/lib/CLITest.pm
 t/lib/MyApp.pm
 t/lib/MyApp/Help.pm
@@ -15,5 +19,7 @@ t/lib/MyApp/Test.pm
 t/lib/MyApp/Test/Cascading.pm
 t/lib/MyApp/Test/Cascading/Infinite.pm
 t/lib/MyApp/Test/Cascading/Infinite/Subcommands.pm
+t/lib/MyCompleteApp.pm
+t/lib/MyCompleteApp/Help.pm
 META.yml                                 Module YAML meta-data (added by MakeMaker)
 META.json                                Module JSON meta-data (added by MakeMaker)

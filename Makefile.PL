@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 
 use strict;
 use warnings;
@@ -17,15 +17,24 @@ WriteMakefile(
     ],
     LICENSE   => "perl_5",
     PREREQ_PM => {
+        'strict'                   => 0,
+        'warnings'                 => 0,
+        'base'                     => 0,
+        'constant'                 => 0,
         'Locale::Maketext::Simple' => 0,
         'Getopt::Long'             => '2.35',
         'Pod::Simple::Text'        => 0,
         'Carp'                     => 0,
         'File::Find'               => 0,
+        'Class::Load'              => 0,
+        'Capture::Tiny'            => 0,
+        'Scalar::Util'             => 0,
     },
     MIN_PERL_VERSION => 5.006,
     TEST_REQUIRES    => {
-        'Test::More' => 0,
+        'lib'            => 0,
+        'Test::More'     => 0,
+        'Test::Kwalitee' => 0,
     },
     META_MERGE => {
         "meta-spec" => { version => 2 },
@@ -36,6 +45,7 @@ WriteMakefile(
                 web  => 'https://github.com/paultcochrane/app-cli',
             },
         },
+        x_contributors => ['José Joaquín Atria <jjatria@gmail.com>'],
     },
 );
 

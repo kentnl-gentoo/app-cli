@@ -1,12 +1,13 @@
 package CLITest;
 use base 'Exporter';
 use strict;
+use warnings;
 our @EXPORT = qw(cliack clicheck);
 
 our @STACK;
 
 sub cliack {
-    push @STACK, [(caller(0))[0],(caller(1))[3], @_];
+    push @STACK, [ ( caller(0) )[0], ( caller(1) )[3], @_ ];
 }
 
 sub clicheck {
