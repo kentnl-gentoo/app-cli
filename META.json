@@ -38,6 +38,7 @@
             "Capture::Tiny" : "0",
             "Carp" : "0",
             "Class::Load" : "0",
+            "File::Basename" : "0",
             "File::Find" : "0",
             "Getopt::Long" : "2.35",
             "Locale::Maketext::Simple" : "0",
@@ -54,6 +55,7 @@
          "requires" : {
             "Test::Kwalitee" : "0",
             "Test::More" : "0",
+            "Test::Pod" : "0",
             "lib" : "0"
          }
       }
@@ -65,7 +67,7 @@
          "web" : "https://github.com/paultcochrane/app-cli"
       }
    },
-   "version" : "0.46",
+   "version" : "0.47",
    "x_contributors" : [
       "José Joaquín Atria <jjatria@gmail.com>"
    ],
