@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 5;
+use Test::More tests => 6;
 use lib qw(t/lib);
 use Capture::Tiny qw(capture_stdout);
 
@@ -11,15 +11,18 @@ use App::CLI::Command;
 use MyApp;
 use MyCompleteApp;
 
-eval {
-    my $command = App::CLI::Command->new();
-    $command->run;
+subtest "require run() method" => sub {
+    my $eval_result = eval {
+        my $command = App::CLI::Command->new();
+        $command->run;
+    };
+    ok( !$eval_result );
+    like(
+        $@,
+        qr/does not implement mandatory method 'run'/,
+        "require subclass to implement run()"
+    );
 };
-like(
-    $@,
-    qr/does not implement mandatory method 'run'/,
-    "require subclass to implement run()"
-);
 
 subtest "brief_usage() behaviour" => sub {
     plan tests => 1;
@@ -101,12 +104,76 @@ subtest "commands() behaviour" => sub {
         $command->dispatch();
     };
     chomp $output;
-    is(
-        $output,
-        '    help',
-        "commands command shows available commands in app"
-    );
+    is( $output, '    help',
+        "commands command shows available commands in app" );
+};
 
+subtest "help command behaviour" => sub {
+    plan tests => 6;
+
+    {
+        local *ARGV = [ 'help', 'unknown_topic' ];
+        my $command = MyCompleteApp->new();
+        my $eval_result = eval { $command->dispatch() };
+        ok( !$eval_result );
+        chomp( my $error_text = $@ );
+        is(
+            $error_text,
+            "Cannot find help topic 'unknown_topic'.",
+            "Unknown topic error text"
+        );
+    }
+
+    {
+        local *ARGV = [ 'help', 'commands' ];
+        my $command = MyCompleteApp->new();
+        my $output = capture_stdout { $command->dispatch() };
+        chomp $output;
+        is(
+            $output,
+            '    help - help for the complete test app',
+            "Explicit commands help request"
+        );
+    }
+
+    {
+        local *ARGV = ['help'];
+        my $command = MyCompleteApp->new();
+        my $output = capture_stdout { $command->dispatch() };
+        chomp $output;
+        is(
+            $output,
+            '    help - help for the complete test app',
+            "Default help output without explicit topics arg"
+        );
+    }
+
+    {
+        local *ARGV = [ 'help', 'help' ];
+        my $command = MyCompleteApp->new();
+        my $output = capture_stdout { $command->dispatch() };
+        chomp $output;
+        like(
+            $output,
+            qr/NAME\s+help - help for the complete test app/m,
+            "Help output for explicit topic with own usage text"
+        );
+    }
+
+    {
+        local *ARGV = [ 'help', 'force' ];
+        my $command = MyCompleteApp->new();
+        my $output = capture_stdout { $command->dispatch() };
+        chomp $output;
+        my $heading      = 'NAME\s+';
+        my $package_name = 'MyCompleteApp::Help::Force';
+        my $help_text    = 'force the action to happen';
+        like(
+            $output,
+            qr/$heading$package_name - $help_text/m,
+            "Help output for explicit topic with help in POD"
+        );
+    }
 };
 
 # vim: expandtab shiftwidth=4

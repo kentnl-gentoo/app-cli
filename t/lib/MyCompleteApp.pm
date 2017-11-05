@@ -12,7 +12,7 @@ use constant alias => (
     te          => 'test',
 );
 
-use constant global_options => (
+use constant options => (
     'help'       => 'help',
     'username=s' => 'username',
     'force'      => 'force'
@@ -31,5 +31,9 @@ MyCompleteApp - my command line app with docs, version, etc.
 Me, Myself, I
 
 =cut
+
+sub run {
+    my ( $self, @args ) = @_;
+}
 
 1;

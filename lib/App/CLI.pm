@@ -5,7 +5,7 @@ use warnings;
 use 5.006;
 use Class::Load qw( load_class );
 
-our $VERSION = '0.47';
+our $VERSION = '0.48';
 
 =encoding utf8
 
@@ -238,7 +238,7 @@ sub cmd_map {
     # No such command
     return unless $cmd;
 
-    my $base = ref $self->app;
+    my $base = ref $self;
     return join '::', $base, ucfirst $cmd;
 }
 
@@ -335,6 +335,10 @@ The following people have contributed patches to the project:
 =item *
 
 José Joaquín Atria E<lt>jjatria@gmail.comE<gt>
+
+=item *
+
+sunnavy            E<lt>sunnavy@gmail.comE<gt>
 
 =back
 

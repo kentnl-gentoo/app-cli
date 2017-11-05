@@ -116,7 +116,7 @@ sub cascadable {
         my $package_name = $class . '::' . $_;
         load_class $package_name;
         if ( $ARGV[0]
-            and ucfirst( $ARGV[0] ) eq $_
+            && (ucfirst( $ARGV[0] ) eq $_)
             && exists ${ $class . '::' }{ $_ . '::' } )
         {
             return $package_name;
@@ -124,6 +124,12 @@ sub cascadable {
     }
     return undef;
 }
+
+=head3 app
+
+Return the object referring to the current app.
+
+=cut
 
 sub app {
     my $self = shift;
@@ -148,14 +154,15 @@ sub brief_usage {
     open my ($podfh), '<', ( $file || $self->filename ) or return;
     local $/ = undef;
     my $buf  = <$podfh>;
-    my $base = $self->app;
+    my $base = ref $self->app;
+    my $indent = "    ";
     if ( $buf =~ /^=head1\s+NAME\s*\Q$base\E::(\w+ - .+)$/m ) {
-        print "   ", loc( lc($1) ), "\n";
+        print $indent, loc( lc($1) ), "\n";
     }
     else {
         my $cmd = $file || $self->filename;
         $cmd =~ s/^(?:.*)\/(.*?).pm$/$1/;
-        print "   ", lc($cmd), " - ", loc("undocumented") . "\n";
+        print $indent, lc($cmd), " - ", loc("undocumented") . "\n";
     }
     close $podfh;
 }
@@ -177,7 +184,7 @@ sub usage {
     $parser->output_string( \$buf );
     $parser->parse_file($fname);
 
-    my $base = $self->app;
+    my $base = ref $self->app;
     $buf =~ s/\Q$base\E::(\w+)/\l$1/g;
     $buf =~ s/^AUTHORS.*//sm;
     $buf =~ s/^DESCRIPTION.*//sm unless $want_detail;

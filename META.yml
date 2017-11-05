@@ -6,6 +6,7 @@ author:
   - 'Shelling       <navyblueshellingford@gmail.com>'
   - 'Paul Cochrane  <paul@liekut.de>'
 build_requires:
+  Class::Load: '0'
   ExtUtils::MakeMaker: '0'
   Test::Kwalitee: '0'
   Test::More: '0'
@@ -14,7 +15,7 @@ build_requires:
 configure_requires:
   ExtUtils::MakeMaker: '0'
 dynamic_config: 1
-generated_by: 'ExtUtils::MakeMaker version 6.98, CPAN::Meta::Converter version 2.150010'
+generated_by: 'ExtUtils::MakeMaker version 7.0402, CPAN::Meta::Converter version 2.150001'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -41,7 +42,6 @@ requires:
   warnings: '0'
 resources:
   repository: https://github.com/paultcochrane/app-cli
-version: '0.47'
+version: '0.48'
 x_contributors:
-  - 'José Joaquín Atria <jjatria@gmail.com>'
-x_serialization_backend: 'CPAN::Meta::YAML version 0.012'
+  - 'JosÃ© JoaquÃ­n Atria <jjatria@gmail.com>'

@@ -25,7 +25,7 @@ App::CLI::Command::Help
 
 Your command class should be capitalized.
 
-To add help message, just add POD in the command class:
+To add a help message, just add POD in the command class:
 
     package YourApp::Command::Foo;
 
@@ -79,7 +79,7 @@ sub run {
 
 sub help_base {
     my $self = shift;
-    return $self->app . "::Help";
+    return ref( $self->app ) . "::Help";
 }
 
 my ( $inc, @prefix );
