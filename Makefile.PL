@@ -48,7 +48,11 @@ WriteMakefile(
                 web  => 'https://github.com/paultcochrane/app-cli',
             },
         },
-        x_contributors => ['José Joaquín Atria <jjatria@gmail.com>'],
+        x_contributors => [
+            'José Joaquín Atria <jjatria@gmail.com>',
+            'sunnavy            <sunnavy@gmail.com>',
+            'Ildar Shaimordanov <ildar.shaimordanov@gmail.com>',
+        ],
     },
 );
 

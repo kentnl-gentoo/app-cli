@@ -5,7 +5,7 @@ use warnings;
 use 5.006;
 use Class::Load qw( load_class );
 
-our $VERSION = '0.49';
+our $VERSION = '0.50';
 
 =encoding utf8
 
@@ -340,6 +340,11 @@ José Joaquín Atria E<lt>jjatria@gmail.comE<gt>
 
 sunnavy            E<lt>sunnavy@gmail.comE<gt>
 
+=item *
+
+
+Ildar Shaimordanov E<lt>ildar.shaimordanov@gmail.comE<gt>
+
 =back
 
 =head1 COPYRIGHT
@@ -347,7 +352,7 @@ sunnavy            E<lt>sunnavy@gmail.comE<gt>
 Copyright 2005-2010 by Chia-liang Kao E<lt>clkao@clkao.orgE<gt>.
 Copyright 2010 by Yo-An Lin E<lt>cornelius.howl@gmail.comE<gt>
 and Shelling E<lt>navyblueshellingford@gmail.comE<gt>.
-Copyright 2017 by Paul Cochrane E<lt>paul@liekut.deE<gt>
+Copyright 2017-2018 by Paul Cochrane E<lt>paul@liekut.deE<gt>
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

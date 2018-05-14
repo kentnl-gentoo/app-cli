@@ -25,7 +25,7 @@ subtest "require run() method" => sub {
 };
 
 subtest "brief_usage() behaviour" => sub {
-    plan tests => 1;
+    plan tests => 2;
 
     my $output = capture_stdout {
         local *ARGV = ['help'];
@@ -38,6 +38,18 @@ subtest "brief_usage() behaviour" => sub {
         qr/myapp - undocumented/,
         "undocumented brief_usage() message"
     );
+
+    $output = capture_stdout {
+        local *ARGV = ['help'];
+        my $command = MyCompleteApp->new();
+        $command->dispatch();
+        $command->brief_usage();
+    };
+    like(
+        $output,
+        qr/help - help for the Complete Test App/,
+        "documented brief_usage() message"
+    );  # see also https://github.com/paultcochrane/app-cli/pull/14
 
     # TODO: undocumented in specified file
     # how to behave if input filename doesn't exist?
@@ -131,7 +143,7 @@ subtest "help command behaviour" => sub {
         chomp $output;
         is(
             $output,
-            '    help - help for the complete test app',
+            '    help - help for the Complete Test App',
             "Explicit commands help request"
         );
     }
@@ -143,7 +155,7 @@ subtest "help command behaviour" => sub {
         chomp $output;
         is(
             $output,
-            '    help - help for the complete test app',
+            '    help - help for the Complete Test App',
             "Default help output without explicit topics arg"
         );
     }
@@ -155,7 +167,7 @@ subtest "help command behaviour" => sub {
         chomp $output;
         like(
             $output,
-            qr/NAME\s+help - help for the complete test app/m,
+            qr/NAME\s+help - help for the Complete Test App/m,
             "Help output for explicit topic with own usage text"
         );
     }
