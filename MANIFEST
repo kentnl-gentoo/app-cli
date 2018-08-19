@@ -12,8 +12,6 @@ MANIFEST.SKIP
 README.md
 t/01-basic.t
 t/02-command.t
-t/03-pod.t
-t/99-kwalitee.t
 t/lib/CLITest.pm
 t/lib/MyApp.pm
 t/lib/MyApp/Help.pm

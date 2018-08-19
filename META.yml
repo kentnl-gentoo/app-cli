@@ -6,11 +6,8 @@ author:
   - 'Shelling       <navyblueshellingford@gmail.com>'
   - 'Paul Cochrane  <paul@liekut.de>'
 build_requires:
-  Class::Load: '0'
   ExtUtils::MakeMaker: '0'
-  Test::Kwalitee: '0'
   Test::More: '0'
-  Test::Pod: '0'
   lib: '0'
 configure_requires:
   ExtUtils::MakeMaker: '0'
